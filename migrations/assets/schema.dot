@@ -1,0 +1,104 @@
+digraph database_schema {
+    rankdir=TB;
+    graph [fontname="Helvetica" fontsize=12 bgcolor="white" pad=0.5 nodesep=0.8 ranksep=1.0 dpi=150];
+    node [fontname="Helvetica" fontsize=10];
+    edge [fontname="Helvetica" fontsize=9];
+
+    // Bronze layer
+    subgraph cluster_bronze {
+        label=<<B>Bronze — bronze schema</B><BR/><FONT POINT-SIZE="8" COLOR="#718096">Raw signals from PLC (immutable)</FONT>>;
+        style="filled,rounded"; fillcolor="#FFF5F5"; color="#C53030"; fontname="Helvetica"; fontsize=10;
+        penwidth=1.5;
+
+        raw_lifetime [shape=plain label=<
+            <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="white" COLOR="#C53030">
+                <TR><TD COLSPAN="3" BGCOLOR="#C53030" ALIGN="CENTER"><FONT COLOR="white"><B>raw_lifetime</B></FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8">IDX</FONT></TD><TD ALIGN="LEFT"><B>timestamp</B></TD><TD ALIGN="LEFT"><FONT COLOR="#718096">TIMESTAMPTZ</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8">IDX</FONT></TD><TD ALIGN="LEFT"><B>signal</B></TD><TD ALIGN="LEFT"><FONT COLOR="#718096">TEXT</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"> </TD><TD ALIGN="LEFT">value</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">DOUBLE PRECISION</FONT></TD></TR>
+                <TR><TD COLSPAN="3" BGCOLOR="#FFF5F5" ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">~1,048,000 rows</FONT></TD></TR>
+            </TABLE>
+        >];
+
+        raw_piece_info [shape=plain label=<
+            <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="white" COLOR="#C53030">
+                <TR><TD COLSPAN="3" BGCOLOR="#C53030" ALIGN="CENTER"><FONT COLOR="white"><B>raw_piece_info</B></FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8">IDX</FONT></TD><TD ALIGN="LEFT"><B>timestamp</B></TD><TD ALIGN="LEFT"><FONT COLOR="#718096">TIMESTAMPTZ</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8">IDX</FONT></TD><TD ALIGN="LEFT"><B>signal</B></TD><TD ALIGN="LEFT"><FONT COLOR="#718096">TEXT</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"> </TD><TD ALIGN="LEFT">value</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">TEXT</FONT></TD></TR>
+                <TR><TD COLSPAN="3" BGCOLOR="#FFF5F5" ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">~360,000 rows</FONT></TD></TR>
+            </TABLE>
+        >];
+
+        v_pieces [shape=plain label=<
+            <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="white" COLOR="#A0AEC0" STYLE="DASHED">
+                <TR><TD BGCOLOR="#A0AEC0" ALIGN="CENTER"><FONT COLOR="white"><B>v_pieces</B> (VIEW)</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">Pivot of bronze (~179,600 rows)</FONT></TD></TR>
+            </TABLE>
+        >];
+    }
+
+    // Silver layer
+    subgraph cluster_silver {
+        label=<<B>Silver — silver schema</B><BR/><FONT POINT-SIZE="8" COLOR="#718096">Fully cleaned (notebook 01)</FONT>>;
+        style="filled,rounded"; fillcolor="#EBF8FF"; color="#2B6CB0"; fontname="Helvetica"; fontsize=10;
+        penwidth=1.5;
+
+        clean_pieces [shape=plain label=<
+            <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="white" COLOR="#2B6CB0">
+                <TR><TD COLSPAN="3" BGCOLOR="#2B6CB0" ALIGN="CENTER"><FONT COLOR="white"><B>silver.clean_pieces</B></FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8">UNQ</FONT></TD><TD ALIGN="LEFT"><B>timestamp</B></TD><TD ALIGN="LEFT"><FONT COLOR="#718096">TIMESTAMPTZ</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"> </TD><TD ALIGN="LEFT">piece_id</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">TEXT</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8">IDX</FONT></TD><TD ALIGN="LEFT">die_matrix</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">INTEGER</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"> </TD><TD ALIGN="LEFT">lifetime_2nd_strike_s</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">DOUBLE PRECISION</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"> </TD><TD ALIGN="LEFT">lifetime_3rd_strike_s</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">DOUBLE PRECISION</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"> </TD><TD ALIGN="LEFT">lifetime_4th_strike_s</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">DOUBLE PRECISION</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"> </TD><TD ALIGN="LEFT">lifetime_auxiliary_press_s</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">DOUBLE PRECISION</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"> </TD><TD ALIGN="LEFT">lifetime_bath_s</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">DOUBLE PRECISION</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"> </TD><TD ALIGN="LEFT">lifetime_general_s</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">DOUBLE PRECISION</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"> </TD><TD ALIGN="LEFT">oee_cycle_time_s</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">DOUBLE PRECISION</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8">IDX</FONT></TD><TD ALIGN="LEFT">processed_at</TD><TD ALIGN="LEFT"><FONT COLOR="#718096">TIMESTAMPTZ</FONT></TD></TR>
+                <TR><TD COLSPAN="3" BGCOLOR="#EBF8FF" ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">~169,000 rows (1 per piece)</FONT></TD></TR>
+            </TABLE>
+        >];
+    }
+
+    // Gold layer
+    subgraph cluster_gold {
+        label=<<B>Gold — parquet file</B><BR/><FONT POINT-SIZE="8" COLOR="#718096">Enriched (notebook 02)</FONT>>;
+        style="filled,rounded"; fillcolor="#F0FFF4"; color="#276749"; fontname="Helvetica"; fontsize=10;
+        penwidth=1.5;
+
+        gold_parquet [shape=plain label=<
+            <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="white" COLOR="#276749">
+                <TR><TD COLSPAN="2" BGCOLOR="#276749" ALIGN="CENTER"><FONT COLOR="white"><B>pieces.parquet</B></FONT></TD></TR>
+                <TR><TD ALIGN="LEFT">timestamp, piece_id, die_matrix</TD><TD ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">identification</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT">lifetime_{2nd,3rd,4th}_strike_s, aux_press_s, bath_s</TD><TD ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">cumulative (s)</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT">oee_cycle_time_s</TD><TD ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">throughput (s)</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT">partial_*_s (5 cols)</TD><TD ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">inter-stage (s)</FONT></TD></TR>
+                <TR><TD ALIGN="LEFT">after_gap, production_run_id</TD><TD ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">production context</FONT></TD></TR>
+                <TR><TD COLSPAN="2" BGCOLOR="#F0FFF4" ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">~169,000 rows · ~4.3 MB</FONT></TD></TR>
+            </TABLE>
+        >];
+    }
+
+    // Flyway
+    flyway_schema_history [shape=plain label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="white" COLOR="#A0AEC0">
+            <TR><TD BGCOLOR="#A0AEC0" ALIGN="CENTER"><FONT COLOR="white"><B>flyway_schema_history</B></FONT></TD></TR>
+            <TR><TD ALIGN="LEFT"><FONT COLOR="#718096" POINT-SIZE="8">Migration tracking (Flyway)</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Relationships
+    raw_lifetime -> v_pieces [style=dashed color="#A0AEC0" arrowsize=0.7];
+    raw_piece_info -> v_pieces [style=dashed color="#A0AEC0" arrowsize=0.7];
+
+    raw_lifetime -> clean_pieces [label="  01_bronze_to_silver\n  (incremental)" color="#2B6CB0" fontcolor="#2B6CB0" penwidth=1.5];
+    raw_piece_info -> clean_pieces [color="#2B6CB0" penwidth=1.5];
+
+    clean_pieces -> gold_parquet [label="  02_silver_to_gold\n  (full regeneration)" color="#276749" fontcolor="#276749" penwidth=1.5];
+
+    // Layout
+    {rank=same; raw_lifetime; raw_piece_info}
+}

@@ -1,0 +1,149 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "env-setup-title",
+   "metadata": {},
+   "source": "# Step 1: Environment Configuration Setup\n\nThis notebook creates the required `.env` file in the shared directory with the necessary configuration for the project."
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "execution_state": "idle",
+   "id": "create-env-file",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-11T13:03:56.081314Z",
+     "iopub.status.busy": "2026-03-11T13:03:56.081022Z",
+     "iopub.status.idle": "2026-03-11T13:03:56.252022Z",
+     "shell.execute_reply": "2026-03-11T13:03:56.250877Z",
+     "shell.execute_reply.started": "2026-03-11T13:03:56.081280Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Detected Account ID: 283784618425\n",
+      "Detected Region: eu-west-1\n",
+      "Bucket Name: sagemaker-unified-overheat-demo-283784618425\n",
+      "\n",
+      "✅ .env file created successfully in /home/sagemaker-user/shared/.env\n",
+      "\n",
+      "Content:\n",
+      "BUCKET_NAME=sagemaker-unified-overheat-demo-283784618425\n",
+      "REGION=eu-west-1\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "import boto3\n",
+    "import os\n",
+    "\n",
+    "# Get AWS account ID and region\n",
+    "sts = boto3.client('sts')\n",
+    "account_id = sts.get_caller_identity()['Account']\n",
+    "region = boto3.Session().region_name\n",
+    "\n",
+    "# Create bucket name with actual account ID\n",
+    "bucket_name = f\"sagemaker-unified-overheat-demo-{account_id}\"\n",
+    "\n",
+    "print(f\"Detected Account ID: {account_id}\")\n",
+    "print(f\"Detected Region: {region}\")\n",
+    "print(f\"Bucket Name: {bucket_name}\")\n",
+    "\n",
+    "# Create .env content\n",
+    "env_content = f\"\"\"BUCKET_NAME={bucket_name}\n",
+    "REGION={region}\n",
+    "\"\"\"\n",
+    "\n",
+    "# Write to shared directory\n",
+    "with open('/home/sagemaker-user/shared/.env', 'w') as f:\n",
+    "    f.write(env_content)\n",
+    "\n",
+    "print(\"\\n✅ .env file created successfully in /home/sagemaker-user/shared/.env\")\n",
+    "print(\"\\nContent:\")\n",
+    "print(env_content)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "verify-section",
+   "metadata": {},
+   "source": [
+    "## Verify Configuration\n",
+    "\n",
+    "Run the cell below to verify the .env file was created correctly and can be loaded."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "execution_state": "idle",
+   "id": "verify-env",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-11T13:04:01.537972Z",
+     "iopub.status.busy": "2026-03-11T13:04:01.537673Z",
+     "iopub.status.idle": "2026-03-11T13:04:01.582953Z",
+     "shell.execute_reply": "2026-03-11T13:04:01.581282Z",
+     "shell.execute_reply.started": "2026-03-11T13:04:01.537936Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Using bucket: sagemaker-unified-overheat-demo-<account-id>\n",
+      "Using region: eu-west-1\n",
+      "\n",
+      "✅ Configuration loaded successfully!\n"
+     ]
+    }
+   ],
+   "source": [
+    "from dotenv import load_dotenv\n",
+    "import os\n",
+    "\n",
+    "# Load environment variables\n",
+    "load_dotenv('/home/sagemaker-user/shared/.env')\n",
+    "\n",
+    "# Verify values\n",
+    "bucket_name = os.getenv('BUCKET_NAME')\n",
+    "region = os.getenv('REGION')\n",
+    "\n",
+    "print(f\"Using bucket: {bucket_name}\")\n",
+    "print(f\"Using region: {region}\")\n",
+    "\n",
+    "if bucket_name and region:\n",
+    "    print(\"\\n✅ Configuration loaded successfully!\")\n",
+    "else:\n",
+    "    print(\"\\n❌ Configuration not loaded properly\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.11"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

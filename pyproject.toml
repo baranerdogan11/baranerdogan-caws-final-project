@@ -1,0 +1,44 @@
+[project]
+name = "vaultech-analysis"
+version = "0.11.11"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "altair>=5,<6",
+    "boto3>=1.42.74",
+    "jupyterlab>=4.5.6",
+    "pandas>=2.0",
+    "psycopg2-binary",
+    "pyarrow",
+    "pytest",
+    "scikit-learn",
+    "sqlalchemy",
+    "streamlit>=1.40",
+    "xgboost",
+]
+
+[project.scripts]
+lab = "vaultech_analysis.start_lab:main"
+app = "vaultech_analysis.start_app:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.11.11"
+version_files = [
+    "pyproject.toml:^version"
+]
+tag_format = "v$version"
+update_changelog_on_bump = false
+
+[dependency-groups]
+dev = [
+    "pytest-playwright>=0.7.2",
+]
+# Note: version appears in both [project] and [tool.commitizen].
+# This is required — commitizen reads its own version field and
+# updates [project].version via version_files on each bump.
