@@ -19,8 +19,6 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
-# Note: xgboost is imported lazily inside __init__ only if needed
-
 MODEL_DIR = Path(__file__).resolve().parent.parent.parent / "models"
 GOLD_FILE = Path(__file__).resolve().parent.parent.parent / "data" / "gold" / "pieces.parquet"
 
@@ -32,7 +30,6 @@ class Predictor:
         model_dir = Path(model_dir)
         gold_file = Path(gold_file)
 
-        # Load model — support both joblib and XGBoost JSON formats
         joblib_path = model_dir / "xgboost_bath_predictor.joblib"
         json_path = model_dir / "xgboost_bath_predictor.json"
 
@@ -48,7 +45,6 @@ class Predictor:
                 "Run notebooks/05_feature_selection_and_model.ipynb first."
             )
 
-        # Load model metadata
         metadata_path = model_dir / "model_metadata.json"
         if not metadata_path.exists():
             raise FileNotFoundError(f"Metadata not found: {metadata_path}")
@@ -62,12 +58,11 @@ class Predictor:
             int(m["die_matrix"]) for m in self.metadata["per_matrix_metrics"]
         }
 
-        # Load reference medians from gold file for OEE fallback
         if gold_file.exists():
             df_gold = pd.read_parquet(gold_file, columns=["oee_cycle_time_s"])
             self._oee_median = float(df_gold["oee_cycle_time_s"].median())
         else:
-            self._oee_median = 13.8  # fallback default
+            self._oee_median = 13.8
 
     def predict(
         self,
@@ -75,12 +70,7 @@ class Predictor:
         lifetime_2nd_strike_s: float,
         oee_cycle_time_s: float | None = None,
     ) -> dict:
-        """Predict total bath time from early-stage features.
-
-        Returns a dict with predicted_bath_time_s, input values, and model_metrics.
-        Returns {"error": "..."} for unknown die_matrix values.
-        Missing oee_cycle_time_s defaults to the median OEE from training data.
-        """
+        """Predict total bath time from early-stage features."""
         if int(die_matrix) not in self.valid_matrices:
             return {
                 "error": f"Unknown die_matrix {die_matrix}. "
@@ -101,25 +91,25 @@ class Predictor:
             "predicted_bath_time_s": round(predicted, 3),
             "die_matrix": int(die_matrix),
             "lifetime_2nd_strike_s": float(lifetime_2nd_strike_s),
-            "oee_cycle_time_s": oee_cycle_time_s,  # None if not provided
+            "oee_cycle_time_s": oee_cycle_time_s,
             "oee_used_for_prediction": round(oee_for_model, 3),
             "model_metrics": self.metrics,
         }
 
     def predict_batch(self, df: pd.DataFrame) -> pd.Series:
-        """Predict bath time for a DataFrame of pieces.
-
-        Handles missing oee_cycle_time_s by filling with the median.
-        """
+        """Predict bath time for a DataFrame of pieces."""
         df = df.copy()
 
-        # Fill missing OEE with median
         if "oee_cycle_time_s" in df.columns:
             df["oee_cycle_time_s"] = df["oee_cycle_time_s"].fillna(self._oee_median)
         else:
             df["oee_cycle_time_s"] = self._oee_median
 
         df["die_matrix"] = df["die_matrix"].astype(int)
+
+        for col in self.features:
+            if col in df.columns:
+                df[col] = df[col].fillna(df[col].median())
 
         X = df[self.features]
         predictions = self.model.predict(X)
@@ -130,18 +120,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Predict total bath time from early-stage forging features."
     )
-    parser.add_argument(
-        "--die-matrix", type=int, required=True,
-        help="Die matrix number (4974, 5052, 5090, or 5091)"
-    )
-    parser.add_argument(
-        "--strike2", type=float, required=True,
-        help="Cumulative time at 2nd strike in seconds (~17-19s)"
-    )
-    parser.add_argument(
-        "--oee", type=float, default=None,
-        help="OEE cycle time in seconds (optional, defaults to training median)"
-    )
+    parser.add_argument("--die-matrix", type=int, required=True)
+    parser.add_argument("--strike2", type=float, required=True)
+    parser.add_argument("--oee", type=float, default=None)
     args = parser.parse_args()
 
     predictor = Predictor()
