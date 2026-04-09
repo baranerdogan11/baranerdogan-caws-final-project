@@ -1,0 +1,59 @@
+{
+  "model_type": "GradientBoostingRegressor",
+  "target": "lifetime_bath_s",
+  "features": [
+    "die_matrix",
+    "lifetime_2nd_strike_s",
+    "oee_cycle_time_s"
+  ],
+  "hyperparameters": {
+    "n_estimators": 300,
+    "max_depth": 5,
+    "learning_rate": 0.05,
+    "subsample": 0.8,
+    "min_samples_leaf": 10,
+    "random_state": 42
+  },
+  "training": {
+    "n_train": 103960,
+    "n_test": 25990,
+    "train_ratio": 0.8,
+    "stratified_by": "die_matrix",
+    "trained_at": "2026-04-09T13:00:41.762861+00:00"
+  },
+  "metrics": {
+    "rmse": 1.3318,
+    "mae": 0.6529,
+    "r2": 0.7852
+  },
+  "per_matrix_metrics": [
+    {
+      "die_matrix": 4974,
+      "n_test": 2668,
+      "RMSE": 0.781,
+      "MAE": 0.413,
+      "R2": 0.7986
+    },
+    {
+      "die_matrix": 5052,
+      "n_test": 3149,
+      "RMSE": 1.091,
+      "MAE": 0.482,
+      "R2": 0.8149
+    },
+    {
+      "die_matrix": 5090,
+      "n_test": 12588,
+      "RMSE": 1.586,
+      "MAE": 0.839,
+      "R2": 0.7024
+    },
+    {
+      "die_matrix": 5091,
+      "n_test": 7585,
+      "RMSE": 1.093,
+      "MAE": 0.5,
+      "R2": 0.8596
+    }
+  ]
+}
