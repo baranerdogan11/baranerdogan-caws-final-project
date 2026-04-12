@@ -1,13 +1,15 @@
 """
 Forging Line — Piece Travel Time Dashboard
 
-Displays processed pieces with predicted bath time and per-stage
-timing detail.
+Batch predictions use the local model for speed.
+Individual piece predictions use the SageMaker endpoint to demonstrate
+live inference with a debug panel.
 
 Usage:
     uv run streamlit run app/streamlit_app.py
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -20,8 +22,9 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 from vaultech_analysis.inference import Predictor
 
 GOLD_FILE = PROJECT_ROOT / "data" / "gold" / "pieces.parquet"
+ENDPOINT_NAME = os.environ.get("SAGEMAKER_ENDPOINT_NAME", "vaultech-bath-endpoint")
+AWS_REGION = os.environ.get("AWS_DEFAULT_REGION", "eu-west-1")
 
-# Column definitions — process order
 PARTIAL_COLS = [
     "partial_furnace_to_2nd_strike_s",
     "partial_2nd_to_3rd_strike_s",
@@ -53,23 +56,35 @@ CUMULATIVE_LABELS = [
 
 
 @st.cache_resource
-def load_predictor() -> Predictor:
-    return Predictor(
-        model_dir=PROJECT_ROOT / "models",
-        gold_file=GOLD_FILE,
-    )
+def load_local_predictor() -> Predictor:
+    """Local predictor for fast batch predictions on the full dataset."""
+    return Predictor(gold_file=GOLD_FILE)
+
+
+@st.cache_resource
+def load_sagemaker_predictor() -> Predictor | None:
+    """SageMaker predictor for individual piece inference with debug info."""
+    try:
+        return Predictor(
+            endpoint_name=ENDPOINT_NAME,
+            region=AWS_REGION,
+            gold_file=GOLD_FILE,
+        )
+    except Exception:
+        return None
 
 
 @st.cache_data
 def load_data() -> pd.DataFrame:
+    """Load gold data and run batch predictions using the local model."""
     df = pd.read_parquet(GOLD_FILE)
     df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
     df["date"] = df["timestamp"].dt.date
 
-    predictor = load_predictor()
+    # Use local model for batch — fast
+    predictor = load_local_predictor()
     df["predicted_bath_s"] = predictor.predict_batch(df)
     df["prediction_error_s"] = df["lifetime_bath_s"] - df["predicted_bath_s"]
-
     return df
 
 
@@ -80,9 +95,19 @@ def get_reference(df: pd.DataFrame) -> pd.DataFrame:
     return df.groupby("die_matrix")[available].median()
 
 
-# ── Page config ──────────────────────────────────────────────────────────────
+# ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Forging Line Dashboard", layout="wide")
 st.title("Forging Line — Piece Travel Time Dashboard")
+
+# Show backend status
+sm_predictor = load_sagemaker_predictor()
+if sm_predictor:
+    st.caption(
+        f"🟢 Live inference: SageMaker endpoint `{ENDPOINT_NAME}` ({AWS_REGION}) — "
+        f"select a piece below to call it"
+    )
+else:
+    st.caption("🟡 SageMaker endpoint unavailable — showing local predictions only")
 
 # ── Load data ─────────────────────────────────────────────────────────────────
 with st.spinner("Loading data and running predictions…"):
@@ -110,18 +135,17 @@ slow_only = st.sidebar.checkbox("Show slow pieces only (bath > P90 per matrix)")
 
 # Apply filters
 df = df_all[df_all["die_matrix"].isin(selected_matrices)].copy()
-
 if len(date_range) == 2:
     start_date, end_date = date_range
     df = df[(df["date"] >= start_date) & (df["date"] <= end_date)]
-
 if slow_only:
-    p90 = df.groupby("die_matrix")["lifetime_bath_s"].transform(lambda x: x.quantile(0.90))
+    p90 = df.groupby("die_matrix")["lifetime_bath_s"].transform(
+        lambda x: x.quantile(0.90)
+    )
     df = df[df["lifetime_bath_s"] > p90]
 
 # ── Summary metrics ───────────────────────────────────────────────────────────
 st.subheader("Summary")
-
 if len(df) == 0:
     st.warning("No pieces match the current filters.")
     st.stop()
@@ -143,7 +167,6 @@ table_cols = [
 available_table_cols = [c for c in table_cols if c in df.columns]
 df_display = df[available_table_cols].copy()
 df_display["timestamp"] = df_display["timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
-
 df_display = df_display.rename(columns={
     "timestamp": "Timestamp",
     "piece_id": "Piece ID",
@@ -154,8 +177,7 @@ df_display = df_display.rename(columns={
     "oee_cycle_time_s": "OEE (s)",
 })
 
-# Row selection
-st.caption("Select a row to see piece detail below.")
+st.caption("Select a row to see piece detail and live SageMaker inference below.")
 selected_rows = st.dataframe(
     df_display.reset_index(drop=True),
     use_container_width=True,
@@ -175,12 +197,17 @@ else:
     matrix = int(piece["die_matrix"])
     matrix_ref = ref.loc[matrix] if matrix in ref.index else None
 
-    st.subheader(f"Piece Detail — {piece.get('piece_id', 'N/A')} | Die Matrix {matrix}")
-    st.caption(f"Timestamp: {piece['timestamp']} | Bath: {piece['lifetime_bath_s']:.2f}s | Predicted: {piece['predicted_bath_s']:.2f}s")
+    st.subheader(
+        f"Piece Detail — {piece.get('piece_id', 'N/A')} | Die Matrix {matrix}"
+    )
+    st.caption(
+        f"Timestamp: {piece['timestamp']} | "
+        f"Bath: {piece['lifetime_bath_s']:.2f}s | "
+        f"Local prediction: {piece['predicted_bath_s']:.2f}s"
+    )
 
     col_cum, col_partial = st.columns(2)
 
-    # Cumulative times
     with col_cum:
         st.markdown("**Cumulative times vs reference**")
         cum_rows = []
@@ -189,7 +216,7 @@ else:
                 continue
             actual = piece.get(col)
             ref_val = matrix_ref[col] if matrix_ref is not None and col in matrix_ref else None
-            deviation = (actual - ref_val) if (actual is not None and ref_val is not None) else None
+            deviation = (actual - ref_val) if actual is not None and ref_val is not None else None
             cum_rows.append({
                 "Stage": label,
                 "Actual (s)": f"{actual:.2f}" if actual is not None and not pd.isna(actual) else "N/A",
@@ -198,7 +225,6 @@ else:
             })
         st.dataframe(pd.DataFrame(cum_rows), use_container_width=True, hide_index=True)
 
-    # Partial times
     with col_partial:
         st.markdown("**Partial times vs reference**")
         partial_rows = []
@@ -207,11 +233,8 @@ else:
                 continue
             actual = piece.get(col)
             ref_val = matrix_ref[col] if matrix_ref is not None and col in matrix_ref else None
-            deviation = (actual - ref_val) if (actual is not None and ref_val is not None and not pd.isna(actual)) else None
-            if deviation is not None:
-                status = "🔴 Slow" if deviation > 1.0 else "✅ OK"
-            else:
-                status = "N/A"
+            deviation = (actual - ref_val) if actual is not None and ref_val is not None and not pd.isna(actual) else None
+            status = "🔴 Slow" if deviation is not None and deviation > 1.0 else "✅ OK" if deviation is not None else "N/A"
             partial_rows.append({
                 "Segment": label,
                 "Actual (s)": f"{actual:.2f}" if actual is not None and not pd.isna(actual) else "N/A",
@@ -238,18 +261,56 @@ else:
         import altair as alt
         chart_df = pd.DataFrame(chart_data)
         chart = (
-            alt.Chart(chart_df)
-            .mark_bar()
-            .encode(
+            alt.Chart(chart_df).mark_bar().encode(
                 x=alt.X("Segment:N", sort=None, axis=alt.Axis(labelAngle=-30)),
                 y=alt.Y("Time (s):Q"),
                 color=alt.Color("Type:N", scale=alt.Scale(
                     domain=["Actual", "Reference"],
-                    range=["#1f77b4", "#ff7f0e"]
+                    range=["#1f77b4", "#ff7f0e"],
                 )),
                 xOffset="Type:N",
                 tooltip=["Segment", "Type", "Time (s)"],
-            )
-            .properties(height=300)
+            ).properties(height=300)
         )
         st.altair_chart(chart, use_container_width=True)
+
+    # ── Inference debug panel — live SageMaker call ───────────────────────────
+    st.markdown("---")
+    st.subheader("🔍 Live SageMaker Inference")
+
+    if sm_predictor:
+        oee_val = piece.get("oee_cycle_time_s")
+        with st.spinner("Calling SageMaker endpoint…"):
+            debug_result = sm_predictor.predict(
+                die_matrix=matrix,
+                lifetime_2nd_strike_s=float(piece["lifetime_2nd_strike_s"]),
+                oee_cycle_time_s=float(oee_val) if oee_val is not None and not pd.isna(oee_val) else None,
+            )
+
+        debug = debug_result.get("inference_debug", {})
+
+        col_d1, col_d2, col_d3 = st.columns(3)
+        col_d1.metric("Backend", "SAGEMAKER")
+        col_d2.metric("Predicted", f"{debug_result.get('predicted_bath_time_s', 'N/A')}s")
+        col_d3.metric("Latency", f"{debug.get('latency_ms', 'N/A')}ms")
+
+        col_p, col_r = st.columns(2)
+        with col_p:
+            st.markdown("**Input payload sent to endpoint:**")
+            st.code(debug.get("payload", "N/A"), language="text")
+            st.caption(f"Endpoint: `{debug.get('endpoint')}`")
+        with col_r:
+            st.markdown("**Raw response received:**")
+            st.code(debug.get("raw_response", "N/A"), language="text")
+            if debug_result.get("model_metrics"):
+                m = debug_result["model_metrics"]
+                st.caption(
+                    f"Model — RMSE: {m.get('rmse','N/A')}s | "
+                    f"MAE: {m.get('mae','N/A')}s | "
+                    f"R²: {m.get('r2','N/A')}"
+                )
+    else:
+        st.warning(
+            "SageMaker endpoint unavailable. "
+            "Check your AWS credentials and that the endpoint is InService."
+        )
