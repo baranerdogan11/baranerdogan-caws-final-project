@@ -1,0 +1,30 @@
+{
+  "4974": {
+    "furnace_to_2nd_strike": 17.5,
+    "2nd_to_3rd_strike": 6.5,
+    "3rd_to_4th_strike": 13.2,
+    "4th_strike_to_aux_press": 17.0,
+    "aux_press_to_bath": 1.8
+  },
+  "5052": {
+    "furnace_to_2nd_strike": 18.3,
+    "2nd_to_3rd_strike": 7.0,
+    "3rd_to_4th_strike": 14.2,
+    "4th_strike_to_aux_press": 17.3,
+    "aux_press_to_bath": 1.6
+  },
+  "5090": {
+    "furnace_to_2nd_strike": 17.6,
+    "2nd_to_3rd_strike": 6.8,
+    "3rd_to_4th_strike": 13.8,
+    "4th_strike_to_aux_press": 17.7,
+    "aux_press_to_bath": 1.6
+  },
+  "5091": {
+    "furnace_to_2nd_strike": 18.45,
+    "2nd_to_3rd_strike": 7.0,
+    "3rd_to_4th_strike": 13.5,
+    "4th_strike_to_aux_press": 17.0,
+    "aux_press_to_bath": 1.6
+  }
+}

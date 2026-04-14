@@ -1,0 +1,469 @@
+[
+  {
+    "piece_id": "P001",
+    "die_matrix": 4974,
+    "delay": false,
+    "segments": [
+      {
+        "segment": "furnace_to_2nd_strike",
+        "actual_s": 17.5,
+        "reference_s": 17.5,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "2nd_to_3rd_strike",
+        "actual_s": 6.5,
+        "reference_s": 6.5,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "3rd_to_4th_strike",
+        "actual_s": 13.2,
+        "reference_s": 13.2,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "4th_strike_to_aux_press",
+        "actual_s": 17.0,
+        "reference_s": 17.0,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "aux_press_to_bath",
+        "actual_s": 1.8,
+        "reference_s": 1.8,
+        "deviation_s": 0.0,
+        "penalized": false
+      }
+    ],
+    "probable_causes": []
+  },
+  {
+    "piece_id": "P002",
+    "die_matrix": 5052,
+    "delay": false,
+    "segments": [
+      {
+        "segment": "furnace_to_2nd_strike",
+        "actual_s": 18.3,
+        "reference_s": 18.3,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "2nd_to_3rd_strike",
+        "actual_s": 7.0,
+        "reference_s": 7.0,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "3rd_to_4th_strike",
+        "actual_s": 14.2,
+        "reference_s": 14.2,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "4th_strike_to_aux_press",
+        "actual_s": 17.3,
+        "reference_s": 17.3,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "aux_press_to_bath",
+        "actual_s": 1.6,
+        "reference_s": 1.6,
+        "deviation_s": 0.0,
+        "penalized": false
+      }
+    ],
+    "probable_causes": []
+  },
+  {
+    "piece_id": "P003",
+    "die_matrix": 5090,
+    "delay": false,
+    "segments": [
+      {
+        "segment": "furnace_to_2nd_strike",
+        "actual_s": 17.6,
+        "reference_s": 17.6,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "2nd_to_3rd_strike",
+        "actual_s": 6.8,
+        "reference_s": 6.8,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "3rd_to_4th_strike",
+        "actual_s": 13.8,
+        "reference_s": 13.8,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "4th_strike_to_aux_press",
+        "actual_s": 17.7,
+        "reference_s": 17.7,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "aux_press_to_bath",
+        "actual_s": 1.6,
+        "reference_s": 1.6,
+        "deviation_s": 0.0,
+        "penalized": false
+      }
+    ],
+    "probable_causes": []
+  },
+  {
+    "piece_id": "P004",
+    "die_matrix": 5091,
+    "delay": false,
+    "segments": [
+      {
+        "segment": "furnace_to_2nd_strike",
+        "actual_s": 18.4,
+        "reference_s": 18.4,
+        "deviation_s": -0.1,
+        "penalized": false
+      },
+      {
+        "segment": "2nd_to_3rd_strike",
+        "actual_s": 7.0,
+        "reference_s": 7.0,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "3rd_to_4th_strike",
+        "actual_s": 13.5,
+        "reference_s": 13.5,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "4th_strike_to_aux_press",
+        "actual_s": 17.0,
+        "reference_s": 17.0,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "aux_press_to_bath",
+        "actual_s": 1.6,
+        "reference_s": 1.6,
+        "deviation_s": 0.0,
+        "penalized": false
+      }
+    ],
+    "probable_causes": []
+  },
+  {
+    "piece_id": "P005",
+    "die_matrix": 4974,
+    "delay": true,
+    "segments": [
+      {
+        "segment": "furnace_to_2nd_strike",
+        "actual_s": 19.5,
+        "reference_s": 17.5,
+        "deviation_s": 2.0,
+        "penalized": true
+      },
+      {
+        "segment": "2nd_to_3rd_strike",
+        "actual_s": 6.5,
+        "reference_s": 6.5,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "3rd_to_4th_strike",
+        "actual_s": 13.2,
+        "reference_s": 13.2,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "4th_strike_to_aux_press",
+        "actual_s": 17.0,
+        "reference_s": 17.0,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "aux_press_to_bath",
+        "actual_s": 1.8,
+        "reference_s": 1.8,
+        "deviation_s": 0.0,
+        "penalized": false
+      }
+    ],
+    "probable_causes": [
+      "Billet pick",
+      "gripper close",
+      "grip retries",
+      "trajectory",
+      "permissions",
+      "queues"
+    ]
+  },
+  {
+    "piece_id": "P006",
+    "die_matrix": 5052,
+    "delay": true,
+    "segments": [
+      {
+        "segment": "furnace_to_2nd_strike",
+        "actual_s": 18.3,
+        "reference_s": 18.3,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "2nd_to_3rd_strike",
+        "actual_s": 9.0,
+        "reference_s": 7.0,
+        "deviation_s": 2.0,
+        "penalized": true
+      },
+      {
+        "segment": "3rd_to_4th_strike",
+        "actual_s": 14.2,
+        "reference_s": 14.2,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "4th_strike_to_aux_press",
+        "actual_s": 17.3,
+        "reference_s": 17.3,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "aux_press_to_bath",
+        "actual_s": 1.6,
+        "reference_s": 1.6,
+        "deviation_s": 0.0,
+        "penalized": false
+      }
+    ],
+    "probable_causes": [
+      "Retraction",
+      "gripper",
+      "press/PLC handshake",
+      "wait points",
+      "regrip"
+    ]
+  },
+  {
+    "piece_id": "P007",
+    "die_matrix": 5090,
+    "delay": true,
+    "segments": [
+      {
+        "segment": "furnace_to_2nd_strike",
+        "actual_s": 17.6,
+        "reference_s": 17.6,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "2nd_to_3rd_strike",
+        "actual_s": 6.8,
+        "reference_s": 6.8,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "3rd_to_4th_strike",
+        "actual_s": 15.8,
+        "reference_s": 13.8,
+        "deviation_s": 2.0,
+        "penalized": true
+      },
+      {
+        "segment": "4th_strike_to_aux_press",
+        "actual_s": 17.7,
+        "reference_s": 17.7,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "aux_press_to_bath",
+        "actual_s": 1.6,
+        "reference_s": 1.6,
+        "deviation_s": 0.0,
+        "penalized": false
+      }
+    ],
+    "probable_causes": [
+      "Retraction",
+      "conservative trajectory",
+      "synchronization",
+      "positioning",
+      "confirmations"
+    ]
+  },
+  {
+    "piece_id": "P008",
+    "die_matrix": 5091,
+    "delay": true,
+    "segments": [
+      {
+        "segment": "furnace_to_2nd_strike",
+        "actual_s": 18.4,
+        "reference_s": 18.4,
+        "deviation_s": -0.1,
+        "penalized": false
+      },
+      {
+        "segment": "2nd_to_3rd_strike",
+        "actual_s": 7.0,
+        "reference_s": 7.0,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "3rd_to_4th_strike",
+        "actual_s": 13.5,
+        "reference_s": 13.5,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "4th_strike_to_aux_press",
+        "actual_s": 19.0,
+        "reference_s": 17.0,
+        "deviation_s": 2.0,
+        "penalized": true
+      },
+      {
+        "segment": "aux_press_to_bath",
+        "actual_s": 1.6,
+        "reference_s": 1.6,
+        "deviation_s": 0.0,
+        "penalized": false
+      }
+    ],
+    "probable_causes": [
+      "Pick micro-corrections",
+      "transfer",
+      "queue at Auxiliary Press entry",
+      "interlocks"
+    ]
+  },
+  {
+    "piece_id": "P009",
+    "die_matrix": 4974,
+    "delay": true,
+    "segments": [
+      {
+        "segment": "furnace_to_2nd_strike",
+        "actual_s": 17.5,
+        "reference_s": 17.5,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "2nd_to_3rd_strike",
+        "actual_s": 6.5,
+        "reference_s": 6.5,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "3rd_to_4th_strike",
+        "actual_s": 13.2,
+        "reference_s": 13.2,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "4th_strike_to_aux_press",
+        "actual_s": 17.0,
+        "reference_s": 17.0,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "aux_press_to_bath",
+        "actual_s": 3.8,
+        "reference_s": 1.8,
+        "deviation_s": 2.0,
+        "penalized": true
+      }
+    ],
+    "probable_causes": [
+      "Retraction",
+      "transport",
+      "bath queues",
+      "permissions",
+      "bath deposit"
+    ]
+  },
+  {
+    "piece_id": "P010",
+    "die_matrix": 5052,
+    "delay": true,
+    "segments": [
+      {
+        "segment": "furnace_to_2nd_strike",
+        "actual_s": 20.3,
+        "reference_s": 18.3,
+        "deviation_s": 2.0,
+        "penalized": true
+      },
+      {
+        "segment": "2nd_to_3rd_strike",
+        "actual_s": null,
+        "reference_s": 7.0,
+        "deviation_s": null,
+        "penalized": null
+      },
+      {
+        "segment": "3rd_to_4th_strike",
+        "actual_s": null,
+        "reference_s": 14.2,
+        "deviation_s": null,
+        "penalized": null
+      },
+      {
+        "segment": "4th_strike_to_aux_press",
+        "actual_s": 17.3,
+        "reference_s": 17.3,
+        "deviation_s": 0.0,
+        "penalized": false
+      },
+      {
+        "segment": "aux_press_to_bath",
+        "actual_s": 1.6,
+        "reference_s": 1.6,
+        "deviation_s": 0.0,
+        "penalized": false
+      }
+    ],
+    "probable_causes": [
+      "Billet pick",
+      "gripper close",
+      "grip retries",
+      "trajectory",
+      "permissions",
+      "queues"
+    ]
+  }
+]
