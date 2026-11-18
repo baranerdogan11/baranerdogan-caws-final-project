@@ -1,12 +1,24 @@
-# VaultTech — Forging Line Cycle Time Analysis
+# VaultTech: Forging Line Cycle-Time Prediction
 
-Real industrial case study: analyzing per-piece cycle times on a steel forging line that produces track chain links for heavy earthmoving equipment.
+Predicts how long a steel piece will spend in the quench bath 18 seconds into a 58-second forging cycle, so a delay can be flagged before the piece finishes. A real industrial case study on a line that forges track chain links for heavy earthmoving equipment. Final project for Cloud & AWS at ESADE (MSc Business Analytics).
+
+![AWS architecture: Streamlit on ECS Fargate calling a SageMaker real-time endpoint](solutions/architecture_diagram.svg)
+
+## Results
+
+| | |
+|---|---|
+| Raw data | ~180k PLC signal readings across 4 die matrices |
+| Held-out test set | 25,990 pieces (80/20 split, stratified by die matrix) |
+| Mean absolute error | 0.65 s |
+| RMSE | 1.33 s |
+| R² | 0.79 |
+
+Per-matrix metrics are in [`models/model_metadata.json`](models/model_metadata.json). A walkthrough of the deployed app is in [`solutions/demo_video.mp4`](solutions/demo_video.mp4).
 
 ## Overview
 
-Each piece travels ~58 seconds through 4 zones: **Furnace → Main Press (4 strikes) → Auxiliary Press → Quench Bath**. The dataset contains ~180k raw PLC signal readings across 4 die matrices. An XGBoost model predicts total bath time after only the 2nd strike (~18s into the process), enabling real-time delay alerts.
-
-See `docs/FINAL_PROJECT.md` for the full task list and evaluation rubric.
+Each piece travels ~58 seconds through 4 zones: **Furnace → Main Press (4 strikes) → Auxiliary Press → Quench Bath**. A gradient-boosted model predicts total bath time after only the 2nd strike, served from a SageMaker real-time endpoint and shown in a Streamlit dashboard.
 
 ## Prerequisites
 
@@ -17,25 +29,20 @@ See `docs/FINAL_PROJECT.md` for the full task list and evaluation rubric.
 ## Quick start
 
 ```bash
-# 1. Initialize your git repository
-git init
-git add -A
-git commit -m "initial: student starter template"
-
-# 2. Install dependencies
+# 1. Install dependencies
 uv sync
 
-# 3. Create .env and start PostgreSQL + Flyway
+# 2. Create .env and start PostgreSQL + Flyway
 cp infra/.env.example infra/.env
 cd infra && docker compose up -d && cd ..
 
-# 4. Seed the database with raw data
+# 3. Seed the database with raw data
 uv run python scripts/seed.py --env infra/.env
 
-# 5. Launch JupyterLab (notebooks on :8888)
+# 4. Launch JupyterLab (notebooks on :8888)
 uv run lab
 
-# 6. Launch Streamlit app (dashboard on :8501)
+# 5. Launch Streamlit app (dashboard on :8501)
 uv run app
 ```
 
